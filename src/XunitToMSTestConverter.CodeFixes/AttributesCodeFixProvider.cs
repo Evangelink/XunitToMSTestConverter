@@ -52,16 +52,6 @@ public class AttributesCodeFixProvider : CodeFixProvider
             return editor.GetChangedDocument();
         }
 
-        //if (attribute.Ancestors().OfType<ClassDeclarationSyntax>().FirstOrDefault() is { } classDeclarationSyntax)
-        //{
-        //    editor.ReplaceNode(
-        //        classDeclarationSyntax,
-        //        generator.AddAttributes(
-        //            classDeclarationSyntax,
-        //            generator.Attribute(
-        //                generator.TypeExpression(testClassAttribute).WithAddImportsAnnotation())));
-        //}
-
         if (SymbolEqualityComparer.Default.Equals(attributeOperation.Operation.Type, wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.XunitInlineDataAttribute)))
         {
             ReplaceAttribute(attribute, WellKnownTypeNames.MSTestDataRowAttribute, editor, wellKnownTypeProvider);

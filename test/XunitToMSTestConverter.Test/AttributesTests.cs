@@ -31,7 +31,6 @@ public class XunitToMSTestConverterUnitTest
             using Xunit;
             namespace ConsoleApplication1
             {
-                [TestClass]
                 public class TestClass
                 {   
                     [TestMethod]
