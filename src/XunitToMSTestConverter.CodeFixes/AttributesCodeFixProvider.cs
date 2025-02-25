@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.CodeAnalysis.Simplification;
 
 using XunitToMSTestConverter.Helpers;
 
@@ -63,27 +64,28 @@ public class AttributesCodeFixProvider : CodeFixProvider
 
         if (SymbolEqualityComparer.Default.Equals(attributeOperation.Operation.Type, wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.XunitInlineDataAttribute)))
         {
-            editor.ReplaceNode(
-                attribute,
-                generator.Attribute(
-                    generator.TypeExpression(wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.MSTestDataRowAttribute)!)));
+            ReplaceAttribute(attribute, WellKnownTypeNames.MSTestDataRowAttribute, editor, wellKnownTypeProvider);
         }
         else if (SymbolEqualityComparer.Default.Equals(attributeOperation.Operation.Type, wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.XunitMemberDataAttribute)))
         {
-            editor.ReplaceNode(
-                attribute,
-                generator.Attribute(
-                    generator.TypeExpression(wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.MSTestDynamicDataAttribute)!)));
+            ReplaceAttribute(attribute, WellKnownTypeNames.MSTestDynamicDataAttribute, editor, wellKnownTypeProvider);
         }
         else if (SymbolEqualityComparer.Default.Equals(attributeOperation.Operation.Type, wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.XunitTheoryAttribute))
             || SymbolEqualityComparer.Default.Equals(attributeOperation.Operation.Type, wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.XunitFactAttribute)))
         {
-            editor.ReplaceNode(
-                attribute, 
-                generator.Attribute(
-                    generator.TypeExpression(wellKnownTypeProvider.GetOrCreateTypeByMetadataName(WellKnownTypeNames.MSTestTestMethodAttribute)!).wit));
+            ReplaceAttribute(attribute, WellKnownTypeNames.MSTestTestMethodAttribute, editor, wellKnownTypeProvider);
         }
 
         return editor.GetChangedDocument();
+    }
+
+    private static void ReplaceAttribute(SyntaxNode attribute, string newAttributeFullName, DocumentEditor editor, WellKnownTypeProvider wellKnownTypeProvider)
+    {
+        editor.ReplaceNode(
+            attribute,
+            editor.Generator.Attribute(
+                editor.Generator.TypeExpression(wellKnownTypeProvider.GetOrCreateTypeByMetadataName(newAttributeFullName)!)
+                    .WithAdditionalAnnotations(Simplifier.AddImportsAnnotation))
+                .WithAdditionalAnnotations(Simplifier.Annotation));
     }
 }

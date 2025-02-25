@@ -31,10 +31,10 @@ public class XunitToMSTestConverterUnitTest
             using Xunit;
             namespace ConsoleApplication1
             {
-                [TestClassAttribute]
+                [TestClass]
                 public class TestClass
                 {   
-                    [TestMethodAttribute]
+                    [TestMethod]
                     public void Test()
                     {
                     }
